@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dontstarvetogether.api.Repository
-import com.example.dontstarvetogether.model.Data
-import com.example.dontstarvetogether.model.DataItem
+import com.example.dontstarvetogether.model.character.Data
+import com.example.dontstarvetogether.model.crockpot_recipes.DataRecepies
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +24,23 @@ class APIViewModel: ViewModel() {
             withContext(Dispatchers.Main) {
                 if(response.isSuccessful){
                     _characters.value = response.body()
+                    _loading.value = false
+                }
+                else{
+                    Log.e("Error :", response.message())
+                }
+            }
+        }
+    }
+
+    private val _recepies = MutableLiveData<DataRecepies>()
+    val recepies = _recepies
+    fun getRecepies(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = repository.getAllRecepies()
+            withContext(Dispatchers.Main) {
+                if(response.isSuccessful){
+                    _recepies.value = response.body()
                     _loading.value = false
                 }
                 else{

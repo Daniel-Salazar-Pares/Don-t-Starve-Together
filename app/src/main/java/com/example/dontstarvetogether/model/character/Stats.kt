@@ -1,4 +1,4 @@
-package com.example.dontstarvetogether.model
+package com.example.dontstarvetogether.model.character
 
 data class Stats(
     val health: Int,

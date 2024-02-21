@@ -26,15 +26,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.dontstarvetogether.model.Backstory
-import com.example.dontstarvetogether.model.Data
-import com.example.dontstarvetogether.model.DataItem
-import com.example.dontstarvetogether.model.Stats
+import com.example.dontstarvetogether.model.character.Backstory
+import com.example.dontstarvetogether.model.character.Data
+import com.example.dontstarvetogether.model.character.DataItem
+import com.example.dontstarvetogether.model.character.Stats
 import com.example.dontstarvetogether.ui.theme.DontStarveTogetherTheme
+import com.example.dontstarvetogether.view.LaunchScreen
+import com.example.dontstarvetogether.view.ScrollScreen
 import com.example.dontstarvetogether.viewmodel.APIViewModel
 
 class MainActivity : ComponentActivity() {
@@ -48,79 +52,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MyRecyclerView(myViewModel)
+                    DontStarveNavHost()
                 }
             }
         }
     }
-}
-
-@Composable
-fun MyRecyclerView(myViewModel: APIViewModel) {
-    val showLoading: Boolean by myViewModel.loading.observeAsState(true)
-    val defaultBackstory = Backstory(
-        body = "",
-        title = ""
-    )
-    val defaultStats = Stats(
-        health = 0,
-        hunger = 0,
-        sanity = 0
-    )
-    val defaultDataItem = DataItem(
-        animatedShort = "",
-        backstory = defaultBackstory,
-        bigportrait = "",
-        birthdate = "",
-        description = "",
-        entersTheConstantWith = listOf(),
-        favoriteFood = "",
-        name = "",
-        nickname = "",
-        perks = listOf(),
-        portrait = "",
-        quote = "",
-        stats = defaultStats
-    )
-    val characters: Data by myViewModel.characters.observeAsState(Data())
-    myViewModel.getCharacters()
-    if(showLoading){
-        CircularProgressIndicator(
-            modifier = Modifier.width(64.dp),
-            color = MaterialTheme.colorScheme.secondary
-        )
-    }
-    else{
-        LazyColumn {
-            items(characters) { character ->
-                CharacterItem(character = character)
-            }
+    @Composable
+    fun DontStarveNavHost() {
+        val navigationController = rememberNavController()
+        NavHost(
+            navController = navigationController,
+            startDestination = Routes.LaunchScreen.route
+        ) {
+            composable(Routes.LaunchScreen.route) { LaunchScreen(navigationController) }
+            composable(Routes.ScrollScreen.route) { ScrollScreen(APIViewModel, navigationController) }
         }
     }
+
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun CharacterItem(character: DataItem) {
-    Card(
-        border = BorderStroke(2.dp, Color.LightGray),
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Row(modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()) {
-            GlideImage(
-                model = character.bigportrait,
-                contentDescription = "Character Portrait",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(100.dp)
-            )
-            Text(
-                text = character.name,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
-}
+

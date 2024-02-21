@@ -1,4 +1,4 @@
-package com.example.dontstarvetogether.View
+package com.example.dontstarvetogether.view
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dontstarvetogether.R
+import com.example.dontstarvetogether.Routes
 
 import kotlinx.coroutines.delay
 
@@ -63,7 +64,7 @@ fun LaunchScreen(navController: NavController) {
         startAnimation = true
         delay(4000)
         navController.popBackStack()
-            navController.navigate(Routes.MenuScreen.route)
+            navController.navigate(Routes.LaunchScreen.route)
     }
     Splash(alphaAnim.value)
 }
