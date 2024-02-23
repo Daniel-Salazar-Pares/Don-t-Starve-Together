@@ -60,12 +60,13 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun DontStarveNavHost() {
         val navigationController = rememberNavController()
+        val api = APIViewModel()
         NavHost(
             navController = navigationController,
             startDestination = Routes.LaunchScreen.route
         ) {
             composable(Routes.LaunchScreen.route) { LaunchScreen(navigationController) }
-            composable(Routes.ScrollScreen.route) { ScrollScreen(APIViewModel, navigationController) }
+            composable(Routes.ScrollScreen.route) { ScrollScreen(api ,navigationController) }
         }
     }
 

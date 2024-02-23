@@ -15,6 +15,19 @@ class APIViewModel: ViewModel() {
     private val repository = Repository()
     private val _loading = MutableLiveData(true)
     val loading = _loading
+
+    private val _show = MutableLiveData(false)
+    var show = _show
+
+    private val _chosen = MutableLiveData(false)
+    val chosen = _chosen
+    fun setChosen(value: Boolean){
+        _chosen.value = value
+    }
+    fun setShow(value: Boolean){
+        _show.value = value
+    }
+
     private val _characters = MutableLiveData<Data>()
     val characters = _characters
 

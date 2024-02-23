@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -26,30 +28,44 @@ import com.example.dontstarvetogether.R
 import com.example.dontstarvetogether.Routes
 
 import kotlinx.coroutines.delay
+import java.time.format.TextStyle
 
 @Composable
 fun Splash(alphaAnim: Float) {
     Box(modifier = Modifier.fillMaxSize()) {
+        /*
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.matchParentSize()
         )
+
+         */
     }
     Column(modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(painter = painterResource(id = R.drawable.ic_launcher_background),
+        Image(painter = painterResource(id = R.drawable.logo),
             contentDescription = "logo", alpha = alphaAnim
         )
+        val scaryFontFamily = FontFamily(Font(R.font.deathrattlebb_reg, FontWeight.SemiBold))
+
         Text(
-            text = "Welcome to TRIVIA!",
-            fontSize = 24.sp,
+            text = "Don't Starve Together",
+            fontSize = 36.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFFFFD700)
+            color = Color.Gray,
+            fontFamily = scaryFontFamily,
+            style = androidx.compose.ui.text.TextStyle(
+                fontFamily = scaryFontFamily,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Gray
+            )
         )
+
     }
 }
 
@@ -62,9 +78,9 @@ fun LaunchScreen(navController: NavController) {
     )
     LaunchedEffect(key1 = true) {
         startAnimation = true
-        delay(4000)
+        delay(2000)
         navController.popBackStack()
-            navController.navigate(Routes.LaunchScreen.route)
+            navController.navigate(Routes.ScrollScreen.route)
     }
     Splash(alphaAnim.value)
 }

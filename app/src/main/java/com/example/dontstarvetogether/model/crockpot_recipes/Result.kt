@@ -9,4 +9,6 @@ data class Result(
     val spoils: String,
     val stats: Stats,
     val type: String
-)
+) {
+
+}
