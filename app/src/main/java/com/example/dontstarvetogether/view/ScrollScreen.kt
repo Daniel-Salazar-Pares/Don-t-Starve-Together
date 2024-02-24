@@ -1,6 +1,7 @@
 package com.example.dontstarvetogether.view
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.dontstarvetogether.Routes
 import com.example.dontstarvetogether.model.character.Data
 import com.example.dontstarvetogether.model.character.DataItem
 import com.example.dontstarvetogether.model.crockpot_recipes.DataRecepies
@@ -92,7 +94,9 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
     } else if (myViewModel.show.value == false) {
         LazyColumn {
             items(characters) { character ->
-                CharacterItem(character = character)
+                CharacterItem(character = character) {
+                    navController.navigate(Routes.DetailScreenCharacters.createRoute(character.name))
+                }
             }
         }
     } else {
@@ -108,11 +112,11 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CharacterItem(character: DataItem) {
+fun CharacterItem(character: DataItem, onItemSelected: (String) -> Unit) {
     Card(
         border = BorderStroke(2.dp, Color.LightGray),
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp).clickable { onItemSelected(character.name) }
     ) {
         Row(
             modifier = Modifier
