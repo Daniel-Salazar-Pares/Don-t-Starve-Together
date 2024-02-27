@@ -16,7 +16,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.dontstarvetogether.ui.theme.DontStarveTogetherTheme
-import com.example.dontstarvetogether.view.*
+import com.example.dontstarvetogether.view.DetailScreenCharacters
+import com.example.dontstarvetogether.view.DetailScreenRecepies
+import com.example.dontstarvetogether.view.LaunchScreen
+import com.example.dontstarvetogether.view.ScrollScreen
 import com.example.dontstarvetogether.viewmodel.APIViewModel
 
 class MainActivity : ComponentActivity() {
@@ -48,12 +51,25 @@ class MainActivity : ComponentActivity() {
             composable(
                 Routes.DetailScreenCharacters.route,
                 arguments = listOf(navArgument("characterName") { type = NavType.StringType })
-            ) { backStackEntry ->
+            )
+
+            { backStackEntry ->
                 val characterName = backStackEntry.arguments?.getString("characterName")
                 if (characterName != null) {
                     DetailScreenCharacters(navigationController, characterName, api)
                 } else {
                     Text("Character not found")
+                }
+            }
+            composable(
+                Routes.DetailScreenRecepies.route,
+                arguments = listOf(navArgument("recepieName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val recepieName = backStackEntry.arguments?.getString("recepieName")
+                if (recepieName != null) {
+                    DetailScreenRecepies(navigationController, recepieName, api)
+                } else {
+                    Text("Recepie not found")
                 }
             }
         }

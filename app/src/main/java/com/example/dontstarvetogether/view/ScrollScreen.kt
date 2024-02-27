@@ -1,11 +1,13 @@
 package com.example.dontstarvetogether.view
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,11 +28,13 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.dontstarvetogether.R
 import com.example.dontstarvetogether.Routes
 import com.example.dontstarvetogether.model.character.Data
 import com.example.dontstarvetogether.model.character.DataItem
@@ -57,7 +61,9 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Awiwiw or awawa")
+            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo" )
+            Text(text = "Chose what you want to see:")
+            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
             Row {
                 Button(onClick = {
                     myViewModel.setShow(false)
@@ -103,7 +109,9 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
         val recepies = myViewModel.recepies.observeAsState(DataRecepies(0, listOf(), 0))
         LazyColumn {
             items(recepies.value.results) { recepie ->
-                recepieItem(recepie = recepie)
+                RecepieItem(recepie = recepie) {
+                    navController.navigate(Routes.DetailScreenRecepies.createRoute(recepie.name))
+                }
             }
         }
     }
@@ -116,7 +124,9 @@ fun CharacterItem(character: DataItem, onItemSelected: (String) -> Unit) {
     Card(
         border = BorderStroke(2.dp, Color.LightGray),
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(8.dp).clickable { onItemSelected(character.name) }
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { onItemSelected(character.name) }
     ) {
         Row(
             modifier = Modifier
@@ -140,11 +150,13 @@ fun CharacterItem(character: DataItem, onItemSelected: (String) -> Unit) {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun recepieItem(recepie: Result) {
+fun RecepieItem(recepie: Result, onItemSelected: (String) -> Unit) {
     Card(
         border = BorderStroke(2.dp, Color.LightGray),
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { onItemSelected(recepie.name) }
     ) {
         Row(
             modifier = Modifier
