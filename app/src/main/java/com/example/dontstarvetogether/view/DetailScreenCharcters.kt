@@ -2,6 +2,7 @@ package com.example.dontstarvetogether.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,8 +16,13 @@ import androidx.navigation.NavController
 import com.example.dontstarvetogether.model.character.Data
 import com.example.dontstarvetogether.viewmodel.APIViewModel
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.dontstarvetogether.model.character.DataItem
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -24,7 +30,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 fun DetailScreenCharacters(navController: NavController, characterName: String, myViewModel: APIViewModel) {
     val characterDetails by myViewModel.characters.observeAsState(initial = Data())
 
-    // A simple UI that shows character details or a loading indicator
     if (characterDetails.isNotEmpty()) {
         val character = characterDetails.find { it.name == characterName }
         if (character != null) {
@@ -39,11 +44,11 @@ fun DetailScreenCharacters(navController: NavController, characterName: String, 
 
                 GlideImage(
                     model = character.portrait,
-                    contentDescription = "Character Portrait",
+                    contentDescription = "Charac ter Portrait",
                     contentScale = ContentScale.Crop,
-                    modifier = androidx.compose.ui.Modifier.size(100.dp)
+                    modifier = Modifier.size(100.dp)
                 )
-                Text(text = "Nickname: ${character.nickname}")
+                CustomText(character)
                 Text(text = "Quote: \"${character.quote}\"")
             }
         } else {
@@ -54,4 +59,16 @@ fun DetailScreenCharacters(navController: NavController, characterName: String, 
         // Show a loading indicator until characters are fetched
         CircularProgressIndicator()
     }
+}
+
+@Composable
+fun CustomText(character: DataItem) {
+    val text = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+            append("Nickname: ")
+        }
+        append(character.nickname)
+    }
+
+    Text(text = text)
 }

@@ -16,9 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.dontstarvetogether.ui.theme.DontStarveTogetherTheme
-import com.example.dontstarvetogether.view.DetailScreenCharacters
-import com.example.dontstarvetogether.view.LaunchScreen
-import com.example.dontstarvetogether.view.ScrollScreen
+import com.example.dontstarvetogether.view.*
 import com.example.dontstarvetogether.viewmodel.APIViewModel
 
 class MainActivity : ComponentActivity() {
