@@ -24,6 +24,7 @@ class APIViewModel: ViewModel() {
     fun setChosen(value: Boolean){
         _chosen.value = value
     }
+
     fun setShow(value: Boolean){
         _show.value = value
     }
