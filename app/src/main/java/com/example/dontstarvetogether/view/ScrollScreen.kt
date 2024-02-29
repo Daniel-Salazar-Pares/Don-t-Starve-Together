@@ -3,9 +3,7 @@ package com.example.dontstarvetogether.view
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,17 +18,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -72,101 +74,88 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
         myViewModel.getCharacters()
     }
     val characters: Data by myViewModel.characters.observeAsState(Data())
-    Scaffold(
-        modifier = Modifier.background(Color.Cyan),
-        topBar = {
-            Column (modifier = Modifier.fillMaxWidth().background(Color.Cyan)) {
-                Row (horizontalArrangement = Arrangement.Center){
-                    Image(
-                        painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(50.dp)
-                    )
-                    TopAppBar(title = {
 
-                        Text(
-                            text = "Don't Starve Together",
-                            fontSize = 36.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = scaryFontFamily,
-                            modifier = Modifier.background(Color.Cyan),
+    if (chosen == false) {
 
-                            )
-                    })
-                }
-            }
-
-        },
-        bottomBar = {
-            SwitchChanger(myViewModel = myViewModel)
-        }
-    ) { paddingValues ->
-        if (chosen == false) {
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo"
-                )
-                Text(text = "Chose what you want to see:")
-                Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-                Row {
-                    Button(onClick = {
-                        myViewModel.setShow(false)
-                        myViewModel.getCharacters()
-                        myViewModel.setChosen(true)
-                    }) {
-                        Text(text = "Characters")
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Button(onClick = {
-                        myViewModel.setShow(true)
-                        myViewModel.getRecepies()
-                        myViewModel.setChosen(true)
-                    }) {
-                        Text(text = "Recepies")
-
-                    }
-                }
-            }
-        } else if (showLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo"
             )
-            {
-                CircularProgressIndicator(
-                    color = Color.Gray,
-                    strokeWidth = 8.dp
-                )
-            }
+            Text(text = "Chose what you want to see:")
+            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+            Row {
+                Button(onClick = {
+                    myViewModel.setShow(false)
+                    myViewModel.getCharacters()
+                    myViewModel.setChosen(true)
+                }) {
+                    Text(text = "Characters")
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(onClick = {
+                    myViewModel.setShow(true)
+                    myViewModel.getRecepies()
+                    myViewModel.setChosen(true)
+                }) {
+                    Text(text = "Recepies")
 
-        } else if (showFood == false) {
-            Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding())  ) {
-                LazyColumn {
-                    items(characters) { character ->
-                        CharacterItem(character = character) {
-                            navController.navigate(
-                                Routes.DetailScreenCharacters.createRoute(
-                                    character.name
+                }
+            }
+        }
+    } else {
+        Scaffold(
+            topBar = {
+                MyTopAppBar()
+
+            },
+            bottomBar = {
+                MyBottomBar(myViewModel)
+            }
+        ) { paddingValues ->
+            if (showLoading) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                )
+                {
+                    CircularProgressIndicator(
+                        color = Color.Gray,
+                        strokeWidth = 8.dp
+                    )
+                }
+
+            } else if (showFood == false) {
+                Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding().calculateBottomPadding() {
+                    LazyColumn {
+                        items(characters) { character ->
+                            CharacterItem(character = character) {
+                                navController.navigate(
+                                    Routes.DetailScreenCharacters.createRoute(
+                                        character.name
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
-            }
-        } else {
-            val recepies = myViewModel.recepies.observeAsState(DataRecepies(0, listOf(), 0))
-            Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding())) {
-                LazyColumn {
-                    items(recepies.value.results) { recepie ->
-                        RecepieItem(recepie = recepie) {
-                            navController.navigate(Routes.DetailScreenRecepies.createRoute(recepie.name))
+            } else {
+                val recepies = myViewModel.recepies.observeAsState(DataRecepies(0, listOf(), 0))
+                Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding())) {
+                    LazyColumn {
+                        items(recepies.value.results) { recepie ->
+                            RecepieItem(recepie = recepie) {
+                                navController.navigate(
+                                    Routes.DetailScreenRecepies.createRoute(
+                                        recepie.name
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -175,6 +164,55 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyTopAppBar(
+    scaryFontFamily: FontFamily = FontFamily(
+        Font(
+            R.font.deathrattlebb_reg,
+            FontWeight.Bold
+        )
+    )
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(horizontalArrangement = Arrangement.Center) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo",
+                modifier = Modifier.size(50.dp)
+            )
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Don't Starve Together",
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = scaryFontFamily
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
+                    }
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+                    }
+
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun MyBottomBar (myViewModel: APIViewModel) {
+    SwitchChanger(myViewModel = myViewModel)
+}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
