@@ -14,9 +14,9 @@ interface CharacterDao {
     suspend fun getCharacterById(characterId:Int):MutableList<Character>
 
     @Insert
-    suspend fun addCharacter(character: java.lang.Character)
+    suspend fun addCharacter(character: Character)
 
     @Delete
-    suspend fun deleteCharacter(character: java.lang.Character)
+    suspend fun deleteCharacter(character: Character)
 
 }

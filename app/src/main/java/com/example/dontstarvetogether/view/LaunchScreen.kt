@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.dontstarvetogether.R
-import com.example.dontstarvetogether.Routes
+import com.example.dontstarvetogether.model.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable

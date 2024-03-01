@@ -3,8 +3,10 @@ package com.example.dontstarvetogether.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.dontstarvetogether.model.Room.Character
 import com.example.dontstarvetogether.api.Repository
 import com.example.dontstarvetogether.model.character.Data
+import com.example.dontstarvetogether.model.character.DataItem
 import com.example.dontstarvetogether.model.crockpot_recipes.DataRecepies
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,13 +79,48 @@ class APIViewModel: ViewModel() {
         }
     }
 
-    fun performSearch() {
-        Log.d("Search", "Searching for: ${_searchText.value}")
+
+    private val _isFavorite = MutableLiveData<Boolean>(false)
+    val isFavorite = _isFavorite
+
+    private val _favoriteCharacters = MutableLiveData<MutableList<Character>>()
+    val favoriteCharacters = _favoriteCharacters
+
+    fun getFavoriteCharacters(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = repository.getFavoriteCharacters()
+            withContext(Dispatchers.Main) {
+                _favoriteCharacters.value = response
+            }
+        }
     }
 
-    fun setSearchBarVisibility(visible: Boolean) {
-        _isSearchBarVisible.value = visible
+    fun isFavorite(character: Character){
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = repository.isFavorite(character)
+            withContext(Dispatchers.Main) {
+                _isFavorite.value = response
+            }
+        }
     }
+
+
+    fun saveAsFavorite(character: Character){
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.saveAsFavorite(character)
+        }
+    }
+
+    fun deleteFavorite(character: Character){
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.deleteFavorite(character)
+        }
+    }
+
+
+
+
+
 }
 
 

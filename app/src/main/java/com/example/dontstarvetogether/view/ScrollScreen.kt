@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,7 +55,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.dontstarvetogether.R
-import com.example.dontstarvetogether.Routes
+import com.example.dontstarvetogether.model.navigation.Routes
 import com.example.dontstarvetogether.model.character.Data
 import com.example.dontstarvetogether.model.character.DataItem
 import com.example.dontstarvetogether.model.crockpot_recipes.DataRecepies
@@ -278,6 +280,7 @@ fun SearchBar(
 @Composable
 fun MyBottomBar(myViewModel: APIViewModel) {
     SwitchChanger(myViewModel = myViewModel)
+
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -348,12 +351,28 @@ fun SwitchChanger(myViewModel: APIViewModel) {
             .padding(16.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
-        Switch(
-            checked = myViewModel.show.value!!,
-            onCheckedChange = {
-                myViewModel.setShow(it)
-            },
-            modifier = Modifier.align(Alignment.BottomEnd)
-        )
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Person",
+            )
+            Switch(
+                checked = myViewModel.show.value!!,
+                onCheckedChange = {
+                    myViewModel.setShow(it)
+                },
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+
+            )
+            Icon(
+                imageVector = Icons.Filled.ShoppingCart,
+                contentDescription = "Shopping Cart",
+            )
+
+        }
     }
 }

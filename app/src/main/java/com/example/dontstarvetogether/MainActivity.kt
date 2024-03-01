@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.dontstarvetogether.model.navigation.Routes
 import com.example.dontstarvetogether.ui.theme.DontStarveTogetherTheme
 import com.example.dontstarvetogether.view.DetailScreenCharacters
 import com.example.dontstarvetogether.view.DetailScreenRecepies
@@ -76,13 +77,3 @@ class MainActivity : ComponentActivity() {
     }
 
 }
-/*
-@Composable
-fun DetailScreenCharacters(navController: NavController, characterName: String) {
-
-
-}
-
- */
-
-
