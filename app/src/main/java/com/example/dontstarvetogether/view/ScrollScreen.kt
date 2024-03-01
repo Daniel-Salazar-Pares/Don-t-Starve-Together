@@ -19,8 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -30,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,7 +38,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -67,14 +68,13 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
     val chosen: Boolean by myViewModel.chosen.observeAsState(false)
     val showFood: Boolean by myViewModel.show.observeAsState(false)
     val scaryFontFamily = FontFamily(Font(R.font.deathrattlebb_reg, FontWeight.Bold))
-
+    val searchText by myViewModel.searchText.observeAsState("")
+    val showSearchBar: Boolean by myViewModel.isSearchBarVisible.observeAsState(false)
     if (showFood == true && chosen == true) {
         myViewModel.getRecepies()
     } else if (chosen == true) {
         myViewModel.getCharacters()
     }
-    val characters: Data by myViewModel.characters.observeAsState(Data())
-
     if (chosen == false) {
 
         Column(
@@ -110,53 +110,107 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
     } else {
         Scaffold(
             topBar = {
-                MyTopAppBar()
-
+                MyTopAppBar(myViewModel, navController, showSearchBar, scaryFontFamily)
             },
             bottomBar = {
                 MyBottomBar(myViewModel)
             }
         ) { paddingValues ->
-            if (showLoading) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+            Box(
+                modifier = Modifier.padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateTopPadding()
                 )
-                {
-                    CircularProgressIndicator(
-                        color = Color.Gray,
-                        strokeWidth = 8.dp
+            ) {
+                if (showLoading) {
+                    Loading()
+                } else if (showFood == false) {
+                    Characters(
+                        myViewModel = myViewModel,
+                        navController = navController,
+                        serchText = searchText
                     )
+                } else {
+                    Recepies(myViewModel = myViewModel, navController = navController, searchText)
                 }
+            }
 
-            } else if (showFood == false) {
-                Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding().calculateBottomPadding() {
-                    LazyColumn {
-                        items(characters) { character ->
-                            CharacterItem(character = character) {
-                                navController.navigate(
-                                    Routes.DetailScreenCharacters.createRoute(
-                                        character.name
-                                    )
-                                )
-                            }
-                        }
+        }
+    }
+}
+
+@Composable
+fun Loading() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    )
+    {
+        CircularProgressIndicator(
+            color = Color.Gray,
+            strokeWidth = 8.dp
+        )
+    }
+}
+
+@Composable
+fun Characters(myViewModel: APIViewModel, navController: NavController, serchText: String) {
+    val characters: Data by myViewModel.characters.observeAsState(Data())
+    Column() {
+        LazyColumn {
+            if (myViewModel.isSearchBarVisible.value == true) {
+                items(characters.filter {
+                    it.name.uppercase().contains(serchText.uppercase())
+                }) { character ->
+                    CharacterItem(character = character) {
+                        navController.navigate(
+                            Routes.DetailScreenCharacters.createRoute(
+                                character.name
+                            )
+                        )
                     }
                 }
             } else {
-                val recepies = myViewModel.recepies.observeAsState(DataRecepies(0, listOf(), 0))
-                Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding())) {
-                    LazyColumn {
-                        items(recepies.value.results) { recepie ->
-                            RecepieItem(recepie = recepie) {
-                                navController.navigate(
-                                    Routes.DetailScreenRecepies.createRoute(
-                                        recepie.name
-                                    )
-                                )
-                            }
-                        }
+                items(characters) { character ->
+                    CharacterItem(character = character) {
+                        navController.navigate(
+                            Routes.DetailScreenCharacters.createRoute(
+                                character.name
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Recepies(myViewModel: APIViewModel, navController: NavController, serchText: String) {
+    val recepies = myViewModel.recepies.observeAsState(DataRecepies(0, listOf(), 0))
+    Column() {
+        LazyColumn {
+            if (myViewModel.isSearchBarVisible.value == true) {
+                items(recepies.value.results.filter {
+                    it.name.uppercase().contains(serchText.uppercase())
+                }) { recepie ->
+                    RecepieItem(recepie = recepie) {
+                        navController.navigate(
+                            Routes.DetailScreenRecepies.createRoute(
+                                recepie.name
+                            )
+                        )
+                    }
+                }
+            } else {
+                items(recepies.value.results) { recepie ->
+                    RecepieItem(recepie = recepie) {
+                        navController.navigate(
+                            Routes.DetailScreenRecepies.createRoute(
+                                recepie.name
+                            )
+                        )
                     }
                 }
             }
@@ -167,50 +221,62 @@ fun ScrollScreen(myViewModel: APIViewModel, navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar(
-    scaryFontFamily: FontFamily = FontFamily(
-        Font(
-            R.font.deathrattlebb_reg,
-            FontWeight.Bold
-        )
-    )
+    myViewModel: APIViewModel,
+    navController: NavController,
+    showSearchBar: Boolean,
+    scaryFontFamily: FontFamily = FontFamily(Font(R.font.deathrattlebb_reg, FontWeight.Bold))
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(horizontalArrangement = Arrangement.Center) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo",
-                modifier = Modifier.size(50.dp)
-            )
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Don't Starve Together",
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = scaryFontFamily
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
-                    }
+    val searchText by myViewModel.searchText.observeAsState("")
 
-                }
-            )
+    TopAppBar(
+        title = {
+            if (showSearchBar == true) {
+                SearchBar(
+                    myViewModel = myViewModel
+                )
+            } else {
+                Text(
+                    text = "Don't Starve Together",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = scaryFontFamily
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                myViewModel.changeSearchBarVisibility()
+            }) {
+                Icon(imageVector = Icons.Filled.Search, contentDescription = "Search")
+            }
         }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchBar(
+    myViewModel: APIViewModel
+) {
+    val searchText by myViewModel.searchText.observeAsState("")
+    SearchBar(
+        query = searchText,
+        onQueryChange = { myViewModel.onSearchTextChange(it) },
+        onSearch = { myViewModel.onSearchTextChange(it) },
+        active = true,
+        placeholder = { Text("What are you looking for?") },
+        onActiveChange = {},
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.13f)
+            .clip(RectangleShape)
+    ) {
     }
 }
 
+
 @Composable
-fun MyBottomBar (myViewModel: APIViewModel) {
+fun MyBottomBar(myViewModel: APIViewModel) {
     SwitchChanger(myViewModel = myViewModel)
 }
 
@@ -284,7 +350,9 @@ fun SwitchChanger(myViewModel: APIViewModel) {
     ) {
         Switch(
             checked = myViewModel.show.value!!,
-            onCheckedChange = { myViewModel.setShow(it) },
+            onCheckedChange = {
+                myViewModel.setShow(it)
+            },
             modifier = Modifier.align(Alignment.BottomEnd)
         )
     }

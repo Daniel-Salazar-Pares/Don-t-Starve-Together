@@ -15,7 +15,20 @@ class APIViewModel: ViewModel() {
     private val repository = Repository()
     private val _loading = MutableLiveData(true)
     val loading = _loading
+    fun setLoading(value: Boolean){
+        _loading.value = value
+    }
+    private val _searchText = MutableLiveData<String>()
+    val searchText: MutableLiveData<String> = _searchText
 
+    private val _isSearchBarVisible = MutableLiveData<Boolean>(false)
+    val isSearchBarVisible: MutableLiveData<Boolean> = _isSearchBarVisible
+    fun changeSearchBarVisibility(){
+        _isSearchBarVisible.value = !_isSearchBarVisible.value!!
+    }
+    fun onSearchTextChange(newText: String) {
+        _searchText.value = newText
+    }
     private val _show = MutableLiveData(false)
     var show = _show
 
@@ -63,4 +76,15 @@ class APIViewModel: ViewModel() {
             }
         }
     }
+
+    fun performSearch() {
+        Log.d("Search", "Searching for: ${_searchText.value}")
+    }
+
+    fun setSearchBarVisibility(visible: Boolean) {
+        _isSearchBarVisible.value = visible
+    }
 }
+
+
+

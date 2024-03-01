@@ -76,7 +76,6 @@ fun DetailScreenCharacters(
                         fontFamily = scaryFontFamily,
                     )
                 )
-
                 GlideImage(
                     model = character.portrait,
                     contentDescription = "Character Portrait",
