@@ -15,9 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,6 +60,7 @@ fun DetailScreenCharacters(
     myViewModel: APIViewModel
 ) {
     val characterDetails by myViewModel.characters.observeAsState(initial = Data())
+    val isFavorite by myViewModel.isFavorite.observeAsState(initial = false)
     val scaryFontFamily = FontFamily(Font(R.font.deathrattlebb_reg, FontWeight.Bold))
     if (characterDetails.isNotEmpty()) {
         val character = characterDetails.find { it.name == characterName }
@@ -66,16 +72,35 @@ fun DetailScreenCharacters(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = character.name,
-                    fontSize = 54.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    fontFamily = scaryFontFamily,
-                    style = androidx.compose.ui.text.TextStyle(
+                Row (){
+                    Text(
+                        text = character.name,
+                        fontSize = 54.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
                         fontFamily = scaryFontFamily,
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontFamily = scaryFontFamily,
+                        )
                     )
-                )
+                    IconButton(
+                        onClick = {
+                            if (isFavorite) {
+                                myViewModel.deleteFavorite(characterDetails)
+                            } else {
+                                myViewModel.saveAsFavorite(oneFilmDetailed)
+                            }
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.End),
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = "Añadir a favoritos"
+                        )
+                    }
+                }
                 GlideImage(
                     model = character.portrait,
                     contentDescription = "Character Portrait",
